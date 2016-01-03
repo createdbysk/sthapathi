@@ -1,0 +1,10 @@
+- network: main
+  cidr_block: 10.100.0.0/16
+- subnet: private_subnet_1
+  network: main
+  cidr_block: 10.100.1.0/24
+- subnet: private_subnet_2
+  network: main
+  cidr_block: 10.100.2.0/24
+
+
