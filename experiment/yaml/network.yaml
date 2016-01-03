@@ -1,0 +1,18 @@
+- network:
+    name: main
+    cidr_block: ${var.main_cidr_block}
+    tags:
+        Name: main-network-${output.environment}
+    subnets:
+      - name: private_subnet_1
+        number_of_ips: ${var.number_of_subnet_1_ips}
+        tags:
+            # This will resolve to a custom function (future functionality) that has injected parameters
+            # (for e.g. the name, the environment) and will generate a name based on those injected parameters.
+            Name: ${output.auto_name}
+      - name: private_subnet_2
+        number_of_ips: ${var.number_of_subnet_2_ips}
+        tags:
+            # This will resolve to a custom function (future functionality) that has injected parameters
+            # (for e.g. the name, the environment) and will generate a name based on those injected parameters.
+            Name: ${output.auto_name}

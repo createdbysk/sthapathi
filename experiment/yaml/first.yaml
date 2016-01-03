@@ -10,3 +10,17 @@ a : 1
 b : 2
 c : 3
 ...
+---
+# Duplicate keys
+will_dup: 1
+will_dup:
+- a
+- b
+- c
+...
+---
+# Test lists of keys
+- key1: value1
+  key2:
+  - value21
+  - value22
