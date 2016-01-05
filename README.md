@@ -1,5 +1,8 @@
 # Sthapathi
 Use a provider agnostic description to build and launch infrastructure.
+## Why sthapathi
+Sthapathi is the sanskrit word that means "Master Builder". I envision this application as the master builder for any 
+data center.
 
 # YAML Syntax
     - Resource_Type: 
