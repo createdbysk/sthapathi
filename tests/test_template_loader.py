@@ -16,13 +16,14 @@ class TestTemplateLoader(object):
         self._template_loader = None
         self._mock_logging = None
         self._mock_trace = None
+        self._mock_path_resolver = None
 
-    @mock.patch("path_resolver.PathResolver")
+    @mock.patch("path_resolver.PathResolver", autospec=True)
     def setup(self, path_resolver_class):
         # Get access to the mock class instance
-        path_resolver = path_resolver_class.return_value
+        self._mock_path_resolver = path_resolver_class.return_value
         # Set the return value from the PathResolver.resolve_path method.
-        path_resolver.resolve_path.return_value = self._template_path
+        self._mock_path_resolver.resolve_path.return_value = self._template_path
         self._template_loader = template_loader.TemplateLoader(path_resolver_class)
         # Mock the trace method. This does NOT work as a decorator.
         self._mock_trace = mock.patch.object(trace_logging.getLogger("template_loader"), "trace").start()
@@ -48,6 +49,7 @@ class TestTemplateLoader(object):
         # This patch call patches the open in the template_loader module with the mock open.
         with mock.patch("template_loader.open", mock_open):
             template = self._template_loader.load_template(self._provider, self._resource)
+            self._mock_path_resolver.resolve_path.assert_called_once_with(self._provider, self._resource)
             mock_open.assert_called_once_with(self._template_path, 'r')
             assert_equal(self._expected_template, template)
             self._mock_trace.assert_any_call("load_template(%s, %s)", self._provider, self._resource)
