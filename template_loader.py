@@ -8,7 +8,7 @@ class TemplateLoader(object):
 
     def load_template(self, _provider, _resource):
         self._logger.trace("load_template(%s, %s)", _provider, _resource)
-        template_path = self._path_resolver.resolve_path(_provider, _resource)
+        template_path = self._path_resolver.resolve_template_path(_provider, _resource)
         self._logger.trace("load_template(%s, %s) - read template from %s", _provider, _resource, template_path)
         with open(template_path, 'r') as stream:
             template = stream.read()
