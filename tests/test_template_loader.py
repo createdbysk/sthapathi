@@ -54,4 +54,4 @@ class TestTemplateLoader(object):
             assert_equal(self._expected_template, template)
             self._mock_trace.assert_any_call("load_template(%s, %s)", self._provider, self._resource)
             self._mock_trace.assert_any_call("load_template(%s, %s) - read template from %s",
-                                                       self._provider, self._resource, self._template_path)
+                                             self._provider, self._resource, self._template_path)
