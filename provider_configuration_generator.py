@@ -1,7 +1,7 @@
 import pystache
 
 
-class ConfigurationGenerator(object):
+class ProviderConfigurationGenerator(object):
     """
     Provides the functionality to generate the provider specific configuration.
     """

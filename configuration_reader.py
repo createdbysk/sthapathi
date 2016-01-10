@@ -1,6 +1,11 @@
 class ConfigurationReader(object):
-    __TYPE_INDEX = 0
-    __NAME_INDEX = 1
+    """
+    Reads the configuration from the given list of values.
+    Expects the list to have the following format
+    [name, type, {parameter1: value1, parameter2: value2, ...}]
+    """
+    __NAME_INDEX = 0
+    __TYPE_INDEX = 1
     __PARAMETERS_INDEX = 2
 
     @staticmethod

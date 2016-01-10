@@ -15,8 +15,8 @@ class TestProvideConfigurationGenerator(object):
         self._mock_template_loader = template_loader_class.return_value
         self._mock_configuration_reader = configuration_reader_class.return_value
         self._provider_configuration_generator = \
-            provider_configuration_generator.ConfigurationGenerator(self._mock_template_loader,
-                                                                    self._mock_configuration_reader)
+            provider_configuration_generator.ProviderConfigurationGenerator(self._mock_template_loader,
+                                                                            self._mock_configuration_reader)
 
     def test_generate_configuration(self):
         provider = 'PROVIDER'
@@ -25,7 +25,7 @@ class TestProvideConfigurationGenerator(object):
         parameter = 'PARAMETER'
         value = 'VALUE'
         parameters = {parameter: value}
-        configuration_parameters = [resource, name, parameters]
+        configuration_parameters = [name, resource, parameters]
         self._mock_configuration_reader.read_type.return_value = resource
         self._mock_configuration_reader.read_name.return_value = name
         self._mock_configuration_reader.read_parameters.return_value = parameters

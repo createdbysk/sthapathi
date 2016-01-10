@@ -13,7 +13,7 @@ class TestConfigurationReader(object):
         expected_resource = 'RESOURCE'
         expected_name = 'NAME'
         expected_parameters = {'parameter': 'value'}
-        configuration_parameters = [expected_resource, expected_name, expected_parameters]
+        configuration_parameters = [expected_name, expected_resource, expected_parameters]
         resource = self._configuration_reader.read_type(configuration_parameters)
         name = self._configuration_reader.read_name(configuration_parameters)
         parameters = self._configuration_reader.read_parameters(configuration_parameters)

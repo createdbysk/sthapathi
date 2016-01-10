@@ -5,10 +5,10 @@ Sthapathi is the sanskrit word that means "Master Builder". I envision this appl
 data center.
 
 # YAML Syntax
-    - Resource_Type: 
-        - Name_Of_The_Resource <br>
-        - Property_Name_1: Property_Value_1 <br>
-          Property_Name_2: Property_Value_2 <br>
+    Name_Of_The_Resource
+    - Resource_Type
+    - Property_Name_1: Property_Value_1
+      Property_Name_2: Property_Value_2
 
 # References
 ## Template Engine
