@@ -21,9 +21,11 @@ class ProviderConfigurationGenerator(object):
             """
             Use this class to add name to the collection of template parameters.
             """
-            def __init__(self, name, parameters):
-                self._name = name
-                self._parameters = parameters
+            def __init__(self, configuration_reader):
+                # configuration_parameters, which is the parameter passed to the enclosing function
+                # is available in this scope.
+                self._name = configuration_reader.read_name(configuration_parameters)
+                self._parameters = configuration_reader.read_parameters(configuration_parameters)
 
             def name(self):
                 """
@@ -40,10 +42,8 @@ class ProviderConfigurationGenerator(object):
                 """
                 return self._parameters[item]
 
-        configuration_name = self._configuration_reader.read_name(configuration_parameters)
         configuration_type = self._configuration_reader.read_type(configuration_parameters)
-        parameters = self._configuration_reader.read_parameters(configuration_parameters)
         template = self._template_loader.load_template(provider, configuration_type)
-        context = Context(configuration_name, parameters)
+        context = Context(self._configuration_reader)
         generated_configuration = pystache.render(template, context)
         return generated_configuration

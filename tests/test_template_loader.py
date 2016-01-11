@@ -24,7 +24,7 @@ class TestTemplateLoader(object):
         self._mock_path_resolver = path_resolver_class.return_value
         # Set the return value from the PathResolver.resolve_path method.
         self._mock_path_resolver.resolve_template_path.return_value = self._template_path
-        self._template_loader = template_loader.TemplateLoader(path_resolver_class)
+        self._template_loader = template_loader.TemplateLoader(self._mock_path_resolver)
         # Mock the trace method. This does NOT work as a decorator.
         self._mock_trace = mock.patch.object(trace_logging.getLogger("template_loader"), "trace").start()
 

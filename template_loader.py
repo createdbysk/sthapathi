@@ -2,9 +2,9 @@ import trace_logging
 
 
 class TemplateLoader(object):
-    def __init__(self, path_resolver_class):
+    def __init__(self, path_resolver):
         self._logger = trace_logging.getLogger(self.__module__)
-        self._path_resolver = path_resolver_class()
+        self._path_resolver = path_resolver
 
     def load_template(self, _provider, _resource):
         self._logger.trace("load_template(%s, %s)", _provider, _resource)
