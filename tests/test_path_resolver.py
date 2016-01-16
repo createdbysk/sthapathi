@@ -1,11 +1,13 @@
 import mock
 import path_resolver
 import os
+import tests.requirements
 from nose.tools import assert_equal
 
 
 class TestPathResolver(object):
     __BASE_DIR = "BASE_DIR"
+
     def __init__(self):
         self._path_resolver = None
 
@@ -21,10 +23,12 @@ class TestPathResolver(object):
         WHEN the user runs sthapathi
         THEN sthapathi finds the template to generate the code for the resource under .sthapathi/templates/PROVIDER/RESOURCE
         """
-        base_template_path = os.path.join(TestPathResolver.__BASE_DIR, ".sthapathi", "templates")
+        base_template_path = os.path.join(TestPathResolver.__BASE_DIR,
+                                          tests.requirements.BASE_PATH,
+                                          tests.requirements.TEMPLATES_PATH)
         provider = "PROVIDER"
         resource = "RESOURCE"
-        extension = "mustache"
+        extension = tests.requirements.TEMPLATE_EXTENSION
         expected_path = os.path.join(base_template_path, provider, resource) + os.path.extsep + extension
         resolved_path = self._path_resolver.resolve_template_path(provider, resource)
         assert_equal(expected_path, resolved_path)
