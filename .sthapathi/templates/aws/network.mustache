@@ -2,6 +2,14 @@
     "resource": {
         "aws_vpc": {
             "{{name}}": {
+                {{! Put section begin and end on their own line. This causes the following to NOT render
+                    an empty line for . }}
+                {{^enable_dns_support}}
+                "enable_dns_support": {{enable_dns_support}},
+                {{/enable_dns_support}}
+                {{#enable_dns_names}}
+                "enable_dns_names": true,
+                {{/enable_dns_names}}
                 "cidr_block": "{{cidr_block}}"
             }
         }

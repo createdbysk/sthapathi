@@ -1,11 +1,11 @@
 import pystache
 
-template = """{{#key}}
+template = """Before Key
+{{#key}}
 key was {{key}}.
 {{/key}}
-{{^key}}
-key was not defined.
-{{/key}}"""
+Before not defined key
+{{^key}}key was not defined.{{/key}}"""
 
 # If key is defined then the result will be "key was defined"
 print pystache.render(template, {"key": "defined"})

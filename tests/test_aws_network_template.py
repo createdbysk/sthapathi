@@ -14,7 +14,7 @@ class TestAwsNetworkTemplate(object):
         with open(template_path, 'r') as stream:
             self._template = stream.read()
 
-    def test_required_parameters(self):
+    def t_required_parameters(self):
         expected_rendered = u"""{
     "resource": {
         "aws_vpc": {
@@ -26,5 +26,26 @@ class TestAwsNetworkTemplate(object):
 }
 """
         rendered = pystache.render(self._template, {'name': 'network', 'cidr_block': '10.10.0.0/16'})
+        assert_equal(expected_rendered, rendered)
+
+    def t_optional_parameters(self):
+        expected_rendered = u"""{
+    "resource": {
+        "aws_vpc": {
+            "network": {
+                "enable_dns_support": false,
+                "enable_dns_hostnames": true,
+                "instance_tenancy": "dedicated"
+                "cidr_block": "10.10.0.0/16"
+            }
+        }
+    }
+}
+"""
+        rendered = pystache.render(self._template, {'name': 'network',
+                                                    'cidr_block': '10.10.0.0/16',
+                                                    'enable_dns_hostnames': True,
+                                                    'enable_dns_support': False,
+                                                    'instance_tenancy': 'dedicated'})
         assert_equal(expected_rendered, rendered)
 
