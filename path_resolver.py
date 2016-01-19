@@ -20,3 +20,6 @@ class PathResolver(object):
         """
         resolved_path = os.path.join(self._base_path, provider, resource) + os.path.extsep + settings.TEMPLATE_EXTENSION
         return resolved_path
+
+    def resolve_transform_path(self, provider, resource):
+        pass
