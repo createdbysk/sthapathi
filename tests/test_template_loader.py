@@ -39,7 +39,6 @@ class TestTemplateLoader(object):
         WHEN sthapathi invokes the template loader with the name of the resource
         AND the resource is valid
         THEN the template loader loads the template corresponding to the resource.
-        :param mock_logging: Mock instance of the logging module.
         """
         # Documentation for mock_open - https://docs.python.org/dev/library/unittest.mock.html#mock-open
         # Mock the open in the template_loader module.

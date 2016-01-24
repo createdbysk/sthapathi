@@ -6,10 +6,10 @@ class TemplateLoader(object):
         self._logger = trace_logging.getLogger(self.__module__)
         self._path_resolver = path_resolver
 
-    def load_template(self, _provider, _resource):
-        self._logger.trace("load_template(%s, %s)", _provider, _resource)
-        template_path = self._path_resolver.resolve_template_path(_provider, _resource)
-        self._logger.trace("load_template(%s, %s) - read template from %s", _provider, _resource, template_path)
+    def load_template(self, provider, resource):
+        self._logger.trace("load_template(%s, %s)", provider, resource)
+        template_path = self._path_resolver.resolve_template_path(provider, resource)
+        self._logger.trace("load_template(%s, %s) - read template from %s", provider, resource, template_path)
         with open(template_path, 'r') as stream:
             template = stream.read()
         return template

@@ -6,3 +6,4 @@
 BASE_PATH = ".sthapathi"
 TEMPLATES_PATH = "templates"
 TEMPLATE_EXTENSION = "mustache"
+TRANSFORMS_PACKAGE_NAME = 'transforms'
