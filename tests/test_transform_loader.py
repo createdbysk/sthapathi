@@ -1,6 +1,6 @@
-import importlib
 import mock
 from nose.tools import assert_equal
+
 import trace_logging
 import transform_loader
 
@@ -50,6 +50,34 @@ class TestTransformLoader(object):
         self._mock_path_resolver.resolve_transform_path.assert_called_once_with(provider, resource)
         self._mock_import_module.assert_called_once_with(transform_module)
         assert_equal(expected_transform, transform)
+        self._mock_trace.assert_any_call("load_transform(%s, %s)", provider, resource)
+        self._mock_trace.assert_any_call("load_transform(%s, %s) - import_module(%s)",
+                                         provider, resource, transform_module)
+
+    def test_load_transform_given_no_transform_when_load_transform_then_return_identity(self):
+        """
+        GIVEN the name of the resource and the provider
+        AND the resource does not have a transform
+        WHEN sthapathi invokes the transform loader with the name of the resource
+        THEN the template loader returns the identity transform.
+        """
+        # GIVEN
+        provider = 'provider'
+        resource = 'resource'
+        transform_module = 'transforms.provider.resource'
+        value_to_transform = 'identity'
+        self._mock_path_resolver.resolve_transform_path.return_value = transform_module
+        self._mock_import_module.side_effect = ImportError()
+
+        # WHEN
+        transform = self._transform_loader.load_transform(provider, resource)
+
+        # THEN
+        # The returned transform is an identity transform.
+        transformed_value = transform.apply_transform(value_to_transform)
+        assert_equal(value_to_transform, transformed_value)
+        self._mock_path_resolver.resolve_transform_path.assert_called_once_with(provider, resource)
+        self._mock_import_module.assert_called_once_with(transform_module)
         self._mock_trace.assert_any_call("load_transform(%s, %s)", provider, resource)
         self._mock_trace.assert_any_call("load_transform(%s, %s) - import_module(%s)",
                                          provider, resource, transform_module)
