@@ -1,0 +1,4 @@
+default:
+  product: sthapathi
+  env: sandbox
+  region: us-west-2

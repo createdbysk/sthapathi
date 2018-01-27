@@ -1,8 +1,11 @@
 - type: network
   name: network
   parameters:
+    name: network
     cidr: 10.100.0.0/16
 - type: subnet
   name: subnet
   parameters:
+    name: subnet
+    inherit: component
     network: network

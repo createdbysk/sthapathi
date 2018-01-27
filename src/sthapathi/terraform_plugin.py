@@ -1,13 +1,16 @@
-class TerraformPlugin(object):
-    class Error(Exception):
+import plugin
+
+
+class TerraformPlugin(plugin.Plugin):
+    class Error(plugin.Plugin.Error):
         def __init__(self, msg):
-            super(Exception, self).__init__(msg)
+            super(TerraformPlugin.Error, self).__init__(msg)
 
     def __init__(self):
         """
         Constructor
         """
-        pass
+        super(TerraformPlugin, self).__init__()
 
     def generate_target_configuration(self, provider, **kwargs):
         """
@@ -20,6 +23,12 @@ class TerraformPlugin(object):
 
         if "configuration_reader" not in kwargs:
             raise TerraformPlugin.Error("configuration_reader is required")
+
+        parameter_groups = kwargs.get("parameter_groups", [
+            {
+                "default": {}
+            }
+        ])
 
         catalog = self.__load_catalog(kwargs["catalog_path"])
 
@@ -36,7 +45,7 @@ class TerraformPlugin(object):
         }
 
         for element in configuration_reader.read():
-            self.__add(target_configuration, element, catalog["name"], catalog[provider])
+            self.__add(target_configuration, element, catalog["name"], catalog[provider], parameter_groups)
 
         return target_configuration
 
@@ -46,7 +55,7 @@ class TerraformPlugin(object):
         with open(catalog_path, 'r') as stream:
             return yaml.load(stream)
 
-    def __add(self, target_configuration, element, catalog_name, provider_specific_catalog):
+    def __add(self, target_configuration, element, catalog_name, provider_specific_catalog, parameter_groups):
 
         element_type = element["type"]
 
@@ -60,7 +69,8 @@ class TerraformPlugin(object):
             "source": provider_specific_catalog[element_type]
         }
 
-        module_configuration.update(element["parameters"])
+        parameters = self.build_parameters(element["parameters"], parameter_groups)
+        module_configuration.update(parameters)
 
         name = element["name"]
         target_configuration["module"].update({
