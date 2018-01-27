@@ -1,0 +1,4 @@
+name: experimental_catalog
+aws:
+  network: aws-network
+  subnet: aws-subnet
