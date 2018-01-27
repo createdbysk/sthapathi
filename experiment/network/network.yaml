@@ -1,0 +1,8 @@
+- type: network
+  name: experiment
+  parameters:
+    cidr: 10.100.0.0/16
+- type: subnet
+  name: experiment
+  parameters:
+    network: experiment
