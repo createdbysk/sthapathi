@@ -1,4 +1,6 @@
 default:
-  product: sthapathi
-  env: sandbox
-  region: us-west-2
+  variables:
+  - product
+  - env
+  - region
+  - component

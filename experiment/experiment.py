@@ -1,6 +1,7 @@
 import sys
 import os
 import yaml
+import json
 
 sys.path.append(os.path.abspath("../src"))
 
@@ -13,16 +14,20 @@ plugin = sthapathi.terraform_plugin.TerraformPlugin()
 with open("default_parameter_group.yaml", "r") as stream:
     default_parameter_group = yaml.load(stream)
 
-component_parameter_group = {
-    "component": {
-        "component": "network"
+additional_parameter_group = {
+    "additional": {
+        "variables": [
+            "additional"
+        ]
     }
 }
-component_parameter_group.update(default_parameter_group)
+additional_parameter_group.update(default_parameter_group)
 
 target_configuration = plugin.generate_target_configuration("aws",
+                                                            "sthapathi-component",
                                                             catalog_path=os.path.abspath("catalog.yaml"),
-                                                            parameter_groups=component_parameter_group,
+                                                            parameter_groups=additional_parameter_group,
                                                             configuration_reader=reader)
 
-print(target_configuration)
+
+print(json.dumps(target_configuration, indent=4))

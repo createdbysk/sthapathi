@@ -1,4 +1,5 @@
 name: experimental_catalog
 aws:
-  network: aws-network
-  subnet: aws-subnet
+  queue: ./modules/mod-aws-sqs
+  notifier: ./modules/mod-aws-sns
+  queue-message: ./modules/mod-aws-subscribe-sqs-to-sns

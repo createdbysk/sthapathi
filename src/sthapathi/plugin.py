@@ -15,11 +15,11 @@ class Plugin(object):
         """
 
         parameters_to_return = {}
-        self.__append_inherited_parameters(parameters_to_return, parameter_groups, parameters.get("inherit", "default"))
+        self.__append_inherited_parameters(parameters_to_return, parameter_groups, parameters.get("group", "default"))
 
         parameters_to_return.update(parameters)
-        if "inherit" in parameters_to_return:
-            del parameters_to_return["inherit"]
+        if "group" in parameters_to_return:
+            del parameters_to_return["group"]
 
         return parameters_to_return
 
@@ -38,6 +38,11 @@ class Plugin(object):
 
         parameter_group = parameter_groups[parameter_group_name]
 
+        if "variables" not in parameter_group:
+            raise Plugin.Error("variables not found in parameter group {parameter_group_name}".format(
+                parameter_group_name=parameter_group_name
+            ))
+
         if parameter_group_name != "default":
             if "inherit" in parameter_group:
                 inherited_parameter_group_name = parameter_group["inherit"]
@@ -46,4 +51,7 @@ class Plugin(object):
                 # Always inherit from default
                 self.__append_inherited_parameters(parameters, parameter_groups, "default")
 
-        parameters.update(parameter_group)
+        for parameter in parameter_group["variables"]:
+            parameters.update({
+                parameter: "${{var.{parameter}}}".format(parameter=parameter)
+            })

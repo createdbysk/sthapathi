@@ -1,0 +1,16 @@
+- variable: thirdparty_product
+- module: queue
+  name: sqs
+  parameters:
+    name: sqs
+    group: additional
+- module: notifier
+  name: sns
+  parameters:
+    name: sns
+    product: "${var.thirdparty_product}"
+- module: queue-message
+  name: sns-to-sqs
+  parameters:
+    queue_id: "${module.sqs.id}"
+    notifier_id: "${module.sns.id}"

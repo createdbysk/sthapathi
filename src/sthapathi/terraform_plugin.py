@@ -12,12 +12,14 @@ class TerraformPlugin(plugin.Plugin):
         """
         super(TerraformPlugin, self).__init__()
 
-    def generate_target_configuration(self, provider, **kwargs):
+    def generate_target_configuration(self, provider, component, **kwargs):
         """
         Generates the terraform configuration based on the sthapathi configuration.
+        :param component: The component this configuration belongs to.
         :param provider: The provider for which to generate the target configuration
         :param kwargs: Arguments expected to generate the target configuration.
         """
+        import json
         if "catalog_path" not in kwargs:
             raise TerraformPlugin.Error("catalog_path is required")
 
@@ -40,12 +42,36 @@ class TerraformPlugin(plugin.Plugin):
 
         configuration_reader = kwargs["configuration_reader"]
 
-        target_configuration = {
-            "module": {}
-        }
+        target_configuration = {}
+        self.__add_provider_and_backend(target_configuration, provider, component)
+
+        modules = {}
+        variables = {}
 
         for element in configuration_reader.read():
-            self.__add(target_configuration, element, catalog["name"], catalog[provider], parameter_groups)
+            if "module" in element:
+                module_configuration = self.__create_module_configuration(element, catalog["name"],
+                                                                          catalog[provider], parameter_groups)
+                modules.update(module_configuration)
+            elif "variable" in element:
+                variables.update({
+                    element["variable"]: {}
+                })
+            else:
+                raise TerraformPlugin.Error("Unknown element {element}".format(
+                    element=json.dumps(element)
+                ))
+
+        for parameter_group_name, parameter_group in parameter_groups.iteritems():
+            for parameter in parameter_group["variables"]:
+                variables.update({
+                    parameter: {}
+                })
+
+        target_configuration.update({
+            "module": modules,
+            "variable": variables
+        })
 
         return target_configuration
 
@@ -55,9 +81,34 @@ class TerraformPlugin(plugin.Plugin):
         with open(catalog_path, 'r') as stream:
             return yaml.load(stream)
 
-    def __add(self, target_configuration, element, catalog_name, provider_specific_catalog, parameter_groups):
+    @staticmethod
+    def __add_provider_and_backend(target_configuration, provider, component):
+        terraform = {
+            "terraform": {
+                "required_version": ">= 0.10, < 0.12",
+                "backend": {
+                    "s3": {
+                        "key": "dpk/dpk-{component}/{component}.tfstate".format(component=component),
+                        "encrypt": 1
+                    }
+                }
+            }
+        }
 
-        element_type = element["type"]
+        provider = {
+            "provider": {
+                provider: {
+                    "profile": "${var.env}",
+                    "region": "${var.region}"
+                }
+            }
+        }
+
+        target_configuration.update(terraform)
+        target_configuration.update(provider)
+
+    def __create_module_configuration(self, element, catalog_name, provider_specific_catalog, parameter_groups):
+        element_type = element["module"]
 
         if element_type not in provider_specific_catalog:
             raise TerraformPlugin.Error("{element_type} not found in catalog named {catalog_name}".format(
@@ -73,7 +124,8 @@ class TerraformPlugin(plugin.Plugin):
         module_configuration.update(parameters)
 
         name = element["name"]
-        target_configuration["module"].update({
+
+        return {
             name: module_configuration
-        })
+        }
 
