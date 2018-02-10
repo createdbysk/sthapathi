@@ -23,6 +23,12 @@ additional_parameter_group = {
 }
 additional_parameter_group.update(default_parameter_group)
 
+with open("lambda_parameter_group.yaml", "r") as stream:
+    lambda_parameter_group = yaml.load(stream)
+
+additional_parameter_group.update(lambda_parameter_group)
+
+
 target_configuration = plugin.generate_target_configuration("aws",
                                                             "sthapathi-component",
                                                             catalog_path=os.path.abspath("catalog.yaml"),

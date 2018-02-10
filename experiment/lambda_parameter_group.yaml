@@ -1,0 +1,13 @@
+lambdas:
+  variables:
+  - handler
+  - memory_size
+  - timeout
+  - subnet_ids:
+      type: list
+  - security_group_ids:
+      type: list
+  - artifact_dir
+  - environment_variables:
+      type: map
+      value: "${var.default_environment_variables}"

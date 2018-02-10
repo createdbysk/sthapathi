@@ -1,4 +1,6 @@
 class Plugin(object):
+    __PARAMETER_GROUP_NAME_LABEL = "parameter_group"
+
     class Error(Exception):
         def __init__(self, msg):
             super(Exception, self).__init__(msg)
@@ -6,9 +8,10 @@ class Plugin(object):
     def __init__(self):
         pass
 
-    def build_parameters(self, parameters, parameter_groups):
+    def build_parameters(self, parameters, parameter_groups, active_parameter_group):
         """
         Returns the dictionary of parameters that includes inherited parameters.
+        :param active_parameter_group:
         :param parameters: The parameters in the configuration. This may inherit from other parameter_groups.
         :param parameter_groups: The parameter groups.
         :return: The dictionary of parameters that include the inherited parameters.
@@ -16,11 +19,12 @@ class Plugin(object):
 
         parameters_to_return = {}
         self.__append_inherited_parameters(parameters_to_return, parameter_groups,
-                                           parameters.get("parameter_group", "default"))
+                                           parameters.get(Plugin.__PARAMETER_GROUP_NAME_LABEL,
+                                                          active_parameter_group))
 
         parameters_to_return.update(parameters)
-        if "group" in parameters_to_return:
-            del parameters_to_return["group"]
+        if Plugin.__PARAMETER_GROUP_NAME_LABEL in parameters_to_return:
+            del parameters_to_return[Plugin.__PARAMETER_GROUP_NAME_LABEL]
 
         return parameters_to_return
 
@@ -53,9 +57,15 @@ class Plugin(object):
                 self.__append_inherited_parameters(parameters, parameter_groups, "default")
 
         for parameter in parameter_group["variables"]:
+            def get_default_parameter_value(parameter_name):
+                return "${{var.{parameter}}}".format(parameter=parameter_name)
             if type(parameter) is dict:
-                parameters.update(parameter)
+                name_of_parameter = parameter.keys()[0]
+                parameters.update({name_of_parameter:
+                                       parameter[name_of_parameter].get("value",
+                                                                        get_default_parameter_value(name_of_parameter))
+                                   })
             else:
                 parameters.update({
-                    parameter: "${{var.{parameter}}}".format(parameter=parameter)
+                    parameter: get_default_parameter_value(parameter)
                 })

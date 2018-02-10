@@ -1,8 +1,0 @@
-lambdas:
-  variables:
-  - handler
-  - memory_size
-  - timeout
-  - subnet_ids
-  - security_group_ids
-  - artifict_dir

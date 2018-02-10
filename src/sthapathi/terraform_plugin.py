@@ -19,7 +19,6 @@ class TerraformPlugin(plugin.Plugin):
         :param provider: The provider for which to generate the target configuration
         :param kwargs: Arguments expected to generate the target configuration.
         """
-        import json
         if "catalog_path" not in kwargs:
             raise TerraformPlugin.Error("catalog_path is required")
 
@@ -47,15 +46,14 @@ class TerraformPlugin(plugin.Plugin):
 
         modules = {}
         variables = {}
+        current_active_parameter_group = "default"
 
         for element in configuration_reader.read():
-            self.__parse_element(catalog, element, parameter_groups, provider, modules, variables)
+            self.__parse_element(catalog, element, parameter_groups, provider, modules, variables,
+                                 current_active_parameter_group)
 
         for parameter_group_name, parameter_group in parameter_groups.iteritems():
-            for parameter in parameter_group["variables"]:
-                variables.update({
-                    parameter: {}
-                })
+            self.__parse_variables(parameter_group["variables"], variables)
 
         target_configuration.update({
             "module": modules,
@@ -64,18 +62,29 @@ class TerraformPlugin(plugin.Plugin):
 
         return target_configuration
 
-    def __parse_element(self, catalog, element, parameter_groups, provider, modules, variables):
+    def __parse_variables(self, local_variables, variables):
+        for parameter in local_variables:
+            value = {}
+            if type(parameter) is dict:
+                variable_name = parameter.keys()[0]
+                if "type" in parameter[variable_name]:
+                    value["type"] = parameter[variable_name]["type"]
+            else:
+                variable_name = parameter
+            variables.update({variable_name: value})
+
+    def __parse_element(self, catalog, element, parameter_groups, provider, modules, variables,
+                        active_parameter_group):
+        import json
         if "group" in element:
-            self.__create_group_configuration(element, catalog, parameter_groups,
-                                              provider, modules, variables)
+            self.__create_group_configuration(element, catalog, parameter_groups, provider, modules, variables,
+                                              active_parameter_group)
         elif "module" in element:
-            module_configuration = self.__create_module_configuration(element, catalog["name"],
-                                                                      catalog[provider], parameter_groups)
+            module_configuration = self.__create_module_configuration(element, catalog["name"], catalog[provider],
+                                                                      parameter_groups, active_parameter_group)
             modules.update(module_configuration)
-        elif "variable" in element:
-            variables.update({
-                element["variable"]: {}
-            })
+        elif "variables" in element:
+            self.__parse_variables(element["variables"], variables)
         else:
             raise TerraformPlugin.Error("Unknown element {element}".format(
                 element=json.dumps(element)
@@ -113,7 +122,8 @@ class TerraformPlugin(plugin.Plugin):
         target_configuration.update(terraform)
         target_configuration.update(provider)
 
-    def __create_module_configuration(self, element, catalog_name, provider_specific_catalog, parameter_groups):
+    def __create_module_configuration(self, element, catalog_name, provider_specific_catalog, parameter_groups,
+                                      active_parameter_group):
         element_type = element["module"]
 
         if element_type not in provider_specific_catalog:
@@ -126,7 +136,7 @@ class TerraformPlugin(plugin.Plugin):
             "source": provider_specific_catalog[element_type]
         }
 
-        parameters = self.build_parameters(element["parameters"], parameter_groups)
+        parameters = self.build_parameters(element["parameters"], parameter_groups, active_parameter_group)
         module_configuration.update(parameters)
 
         name = element["name"]
@@ -135,13 +145,15 @@ class TerraformPlugin(plugin.Plugin):
             name: module_configuration
         }
 
-    def __create_group_configuration(self, element, catalog, parameter_groups, provider, modules, variables):
+    def __create_group_configuration(self, element, catalog, parameter_groups, provider, modules, variables,
+                                     active_parameter_group):
         group = element["group"]
 
-        parameter_group_name = group.get("parameter_group_name", "default")
+        group_parameter_group = group.get("parameter_group_name", active_parameter_group)
         elements = group.get("elements", [])
 
         for element in elements:
-            self.__parse_element(catalog, element, parameter_groups, provider, modules, variables)
+            self.__parse_element(catalog, element, parameter_groups, provider, modules, variables,
+                                 group_parameter_group)
 
 

@@ -3,4 +3,4 @@ aws:
   queue: ./modules/mod-aws-sqs
   notifier: ./modules/mod-aws-sns
   queue-message: ./modules/mod-aws-subscribe-sqs-to-sns
-  lambda: ssh://git@stash11.bvops.net:7999/map/map-terraform-common.git//modules/mod-lambda
+  lambda: git::ssh://git@stash11.bvops.net:7999/map/map-terraform-common.git//modules/mod-lambda

@@ -1,4 +1,9 @@
-- variable: thirdparty_product
+- variables:
+  - thirdparty_product
+  - experimental_lambda_artifact_id
+  - experimental_lambda_function_name
+  - default_environment_variables:
+      type: map
 - module: queue
   name: sqs
   parameters:
@@ -20,5 +25,7 @@
     - module: lambda
       name: experimental
       parameters:
+        function_name: "${var.experimental_lambda_function_name}"
         artifact_id: "${var.experimental_lambda_artifact_id}"
+
 
