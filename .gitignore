@@ -1,3 +1,6 @@
+*.tf.json
+*.tfplan
+
 # Created by https://www.gitignore.io/api/terraform
 
 ### Terraform ###
