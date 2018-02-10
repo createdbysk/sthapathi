@@ -3,7 +3,7 @@
   name: sqs
   parameters:
     name: sqs
-    group: additional
+    parameter_group: additional
 - module: notifier
   name: sns
   parameters:
@@ -14,3 +14,11 @@
   parameters:
     queue_id: "${module.sqs.id}"
     notifier_id: "${module.sns.id}"
+- group:
+    parameter_group_name: lambdas
+    elements:
+    - module: lambda
+      name: experimental
+      parameters:
+        artifact_id: "${var.experimental_lambda_artifact_id}"
+

@@ -49,18 +49,7 @@ class TerraformPlugin(plugin.Plugin):
         variables = {}
 
         for element in configuration_reader.read():
-            if "module" in element:
-                module_configuration = self.__create_module_configuration(element, catalog["name"],
-                                                                          catalog[provider], parameter_groups)
-                modules.update(module_configuration)
-            elif "variable" in element:
-                variables.update({
-                    element["variable"]: {}
-                })
-            else:
-                raise TerraformPlugin.Error("Unknown element {element}".format(
-                    element=json.dumps(element)
-                ))
+            self.__parse_element(catalog, element, parameter_groups, provider, modules, variables)
 
         for parameter_group_name, parameter_group in parameter_groups.iteritems():
             for parameter in parameter_group["variables"]:
@@ -74,6 +63,23 @@ class TerraformPlugin(plugin.Plugin):
         })
 
         return target_configuration
+
+    def __parse_element(self, catalog, element, parameter_groups, provider, modules, variables):
+        if "group" in element:
+            self.__create_group_configuration(element, catalog, parameter_groups,
+                                              provider, modules, variables)
+        elif "module" in element:
+            module_configuration = self.__create_module_configuration(element, catalog["name"],
+                                                                      catalog[provider], parameter_groups)
+            modules.update(module_configuration)
+        elif "variable" in element:
+            variables.update({
+                element["variable"]: {}
+            })
+        else:
+            raise TerraformPlugin.Error("Unknown element {element}".format(
+                element=json.dumps(element)
+            ))
 
     @staticmethod
     def __load_catalog(catalog_path):
@@ -128,4 +134,14 @@ class TerraformPlugin(plugin.Plugin):
         return {
             name: module_configuration
         }
+
+    def __create_group_configuration(self, element, catalog, parameter_groups, provider, modules, variables):
+        group = element["group"]
+
+        parameter_group_name = group.get("parameter_group_name", "default")
+        elements = group.get("elements", [])
+
+        for element in elements:
+            self.__parse_element(catalog, element, parameter_groups, provider, modules, variables)
+
 

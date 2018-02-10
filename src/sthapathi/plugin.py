@@ -15,7 +15,8 @@ class Plugin(object):
         """
 
         parameters_to_return = {}
-        self.__append_inherited_parameters(parameters_to_return, parameter_groups, parameters.get("group", "default"))
+        self.__append_inherited_parameters(parameters_to_return, parameter_groups,
+                                           parameters.get("parameter_group", "default"))
 
         parameters_to_return.update(parameters)
         if "group" in parameters_to_return:
@@ -52,6 +53,9 @@ class Plugin(object):
                 self.__append_inherited_parameters(parameters, parameter_groups, "default")
 
         for parameter in parameter_group["variables"]:
-            parameters.update({
-                parameter: "${{var.{parameter}}}".format(parameter=parameter)
-            })
+            if type(parameter) is dict:
+                parameters.update(parameter)
+            else:
+                parameters.update({
+                    parameter: "${{var.{parameter}}}".format(parameter=parameter)
+                })
