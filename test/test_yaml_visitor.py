@@ -9,9 +9,18 @@ class TestYamlVisitor(object):
 
     def test_visit_mapping(self, yaml_visitor):
         # Given
-        element = {}
+        element = None
 
         # Then
         with pytest.raises(NotImplementedError):
             # When
             yaml_visitor.visit_mapping(element)
+
+    def test_visit_sequence(self, yaml_visitor):
+        # Given
+        element = None
+
+        # Then
+        with pytest.raises(NotImplementedError):
+            # When
+            yaml_visitor.visit_sequence(element)
