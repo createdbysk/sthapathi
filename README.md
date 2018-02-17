@@ -2,7 +2,7 @@
 Use a provider agnostic description to build and launch infrastructure.
 
 # Usage Guide
-## Catalog
+## catalog.yml
 The catalog is a yaml file that provides a mapping between the elements in the configuration and the terraform modules that they translate 
 to for different providers.
 
