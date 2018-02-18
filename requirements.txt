@@ -1,1 +1,2 @@
 setuptools
+pyKwalify==1.6.0

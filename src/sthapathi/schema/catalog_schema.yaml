@@ -1,0 +1,30 @@
+type: map
+mapping:
+  providers:
+    type: map
+    required: true
+    mapping:
+      regex;(.+):
+        type: map
+        required: true
+        mapping:
+          regex;(.+):
+            type: map
+            required: true
+            mapping:
+              source:
+                type: str
+                required: true
+              argument_groups:
+                type: seq
+                matching: "all"
+                seq:
+                - type: str
+              arguments:
+                type: seq
+                matching: "all"
+                seq:
+                - type: str
+
+
+
